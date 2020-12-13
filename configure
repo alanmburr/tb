@@ -1,0 +1,90 @@
+#!/usr/bin/bash
+
+parameters=$@
+
+func_install () 
+{
+	if grep -Ewoq "20.10*|21*|22*" /etc/lsb-release; then
+		apt install ubuntu-wallpapers-bionic \
+		ubuntu-wallpapers-cosmic \
+		ubuntu-wallpapers-disco \
+		ubuntu-wallpapers-focal \
+		ubuntu-wallpapers-groovy \
+		ubuntu-wallpapers
+		cp custom.xml /usr/share/backgrounds/contest/custom.xml
+		if [ $@ == "-e" ]; then
+			gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/contest/custom.xml'
+		else
+			echo "Run \"gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/contest/custom.xml'\""
+		fi
+	elif grep -Ewoq "18*|19*|20.04*" /etc/lsb-release; then
+		apt install ubuntu-wallpapers
+		cp ./pictures/*.png /usr/share/backgrounds
+		cp ./pictures/*.jpg /usr/share/backgrounds
+		cp ./pictures/*.svg /usr/share/backgrounds
+		cp ./custom.xml /usr/share/backgrounds/contest/custom.xml
+		if [ $@ == '-e' ]; then
+			gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/contest/custom.xml'
+		else
+			echo "Run \"gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/contest/custom.xml\""
+		fi
+	elif ! grep -Ewoq "18*|19*|20*|21*|22*" /etc/lsb-release; then
+		cp ./pictures/*.*g /usr/share/backgrounds
+		cp ./custom.xml /usr/share/backgrounds/contest.xml
+		if [ $@ == '-e' ]; then
+			gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/contest/custom.xml'
+		else
+			echo "Run \"gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/contest/custom.xml\""
+		fi
+	fi
+}
+func_remove ()
+{
+	mv /usr/share/backgrounds/contest/custom.xml /usr/share/backgrounds/contest/bak.custom.xml.old
+}
+func_purge ()
+{
+	rm -f /usr/share/backgrounds/*.*g
+	rm -f /usr/share/backgrounds/*.xml
+	apt install ubuntu-wallpapers
+}
+help_message () {
+	echo -e "Usages:"
+	echo -e " install\tInstall the program on this system"
+	echo -e " remove         Remove the current settings"
+	echo -e " purge          Delete the program from the system"
+	echo -e " -e, enable\tEnable after install."
+	echo -e " --help         Print this help message"
+	echo -e " -rp            Remove and purge program."
+}
+case $parameters in
+
+  "install"|"install")
+    if [
+    echo "Install only"
+    func_install
+    ;;
+  "install -e"|"-ie"|"-i -e")
+    func_install -e
+    ;;
+  "remove")
+    func_remove
+    ;;
+  "purge")
+    func_purge
+    ;;
+  "-rp"|"-r -p"|"remove purge")
+    func_remove
+    echo Removed.
+    func_purge
+    echo Purged.
+    rm $0
+    echo Finished.
+    ;;
+  "--help"|"-h")
+    help_message
+    ;;
+  *)
+    echo -e "$0: error: invalid option: $parameters\n\nType \"--help\" for help."
+    ;;
+esac
