@@ -1,36 +1,43 @@
-#!/usr/bin/bash
+#!/usr/bin/sh
+if [ $(stat $0 | grep "Access: (" | cut -d '/' -f1 | sed -e 's/Access: (//') -ne 0755 ]; then
+  chmod 0755 $0
+fi
+
+mkdir -p $HOME/Downlaods
+git clone https://github.com/wackyblackie/tb $HOME/Downloads/tb-install
+cd $HOME/Downloads/tb-install
 
 parameters=$@
 
 func_install () 
 {
 	if grep -Ewoq "20.10*|21*|22*" /etc/lsb-release; then
-		apt install ubuntu-wallpapers-bionic \
+		sudo apt install ubuntu-wallpapers-bionic \
 		ubuntu-wallpapers-cosmic \
 		ubuntu-wallpapers-disco \
 		ubuntu-wallpapers-focal \
 		ubuntu-wallpapers-groovy \
 		ubuntu-wallpapers
-		cp custom.xml /usr/share/backgrounds/contest/custom.xml
+		sudo cp custom.xml /usr/share/backgrounds/contest/custom.xml
 		if [ $@ == "-e" ]; then
-			gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/contest/custom.xml'
+			sudo gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/contest/custom.xml'
 		else
 			echo "Run \"gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/contest/custom.xml'\""
 		fi
 	elif grep -Ewoq "18*|19*|20.04*" /etc/lsb-release; then
-		apt install ubuntu-wallpapers
+		sudo apt install ubuntu-wallpapers
 		cp ./pictures/*.png /usr/share/backgrounds
 		cp ./pictures/*.jpg /usr/share/backgrounds
 		cp ./pictures/*.svg /usr/share/backgrounds
 		cp ./custom.xml /usr/share/backgrounds/contest/custom.xml
 		if [ $@ == '-e' ]; then
-			gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/contest/custom.xml'
+			sudo gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/contest/custom.xml'
 		else
 			echo "Run \"gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/contest/custom.xml\""
 		fi
 	elif ! grep -Ewoq "18*|19*|20*|21*|22*" /etc/lsb-release; then
-		cp ./pictures/*.*g /usr/share/backgrounds
-		cp ./custom.xml /usr/share/backgrounds/contest.xml
+		sudo cp ./pictures/*.*g /usr/share/backgrounds
+		sudo cp ./custom.xml /usr/share/backgrounds/contest.xml
 		if [ $@ == '-e' ]; then
 			gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/contest/custom.xml'
 		else
@@ -40,27 +47,27 @@ func_install ()
 }
 func_remove ()
 {
-	mv /usr/share/backgrounds/contest/custom.xml /usr/share/backgrounds/contest/bak.custom.xml.old
+	sudo mv /usr/share/backgrounds/contest/custom.xml /usr/share/backgrounds/contest/bak.custom.xml.old
 }
 func_purge ()
 {
-	rm -f /usr/share/backgrounds/*.*g
-	rm -f /usr/share/backgrounds/*.xml
-	apt install ubuntu-wallpapers
+	sudo rm -f /usr/share/backgrounds/*.*g
+	sudo rm -f /usr/share/backgrounds/*.xml
+	sudo apt install ubuntu-wallpapers
 }
 help_message () {
-	echo -e "Usages:"
-	echo -e " install\tInstall the program on this system"
-	echo -e " remove         Remove the current settings"
-	echo -e " purge          Delete the program from the system"
-	echo -e " -e, enable\tEnable after install."
-	echo -e " --help         Print this help message"
-	echo -e " -rp            Remove and purge program."
+	echo "Usages:"
+	echo " install\tInstall the program on this system"
+	echo " remove            Remove the current settings"
+	echo " purge             Delete the program from the system"
+	echo " -e, enable        Enable after install."
+	echo " --help            Print this help message"
+	echo " -rp               Remove and purge program."
+  echo " -n, --non-ubuntu  Install on non-Ubuntu systems."
 }
 case $parameters in
 
   "install"|"install")
-    if [
     echo "Install only"
     func_install
     ;;
@@ -84,7 +91,16 @@ case $parameters in
   "--help"|"-h")
     help_message
     ;;
+  "-n"|"--non-ubuntu")
+    sudo cp ./pictures/*.*g /usr/share/backgrounds
+		sudo cp ./custom.xml /usr/share/backgrounds/contest.xml
+    echo "Run \"gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/contest/custom.xml\""
+    ;;
+  "-ne"|"--non-ubuntu --enable"|"-n -e"|"--non-ubuntu -e"|"-n --enable")
+    sudo cp ./pictures/*.*g /usr/share/backgrounds
+		sudo cp ./custom.xml /usr/share/backgrounds/contest.xml
+		gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/contest/custom.xml'
   *)
-    echo -e "$0: error: invalid option: $parameters\n\nType \"--help\" for help."
+    echo "$0: error: invalid option: $parameters\n\nType \"--help\" for help."
     ;;
 esac
