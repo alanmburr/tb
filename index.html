@@ -1,0 +1,136 @@
+<meta charset="utf-8">
+<title>tb</title>
+<link rel="icon" href="https://ubuntu.com/favicon.ico">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+<script>lozad().observe();
+function toggleFullScreen() {
+  if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    }
+  }
+}
+</script>
+<div class="spinner-border position-absolute top-50 start-50 text-white" style="z-index: -1;"></div>
+
+<div id="carousel" class="carousel slide" data-bs-ride="carousel" data-bs-pause="false" data-bs-interval="7500">
+  <div class="carousel-inner">
+    <div class="carousel-item active" data-bs-interval="250" data-id="0">
+      <img src='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" height="2304" width="4096" fill="rgb(var(--bs-body-rgb))"></svg>' class="d-block w-100" alt="..." width="1264" height="711" style="z-index: 0;">
+    </div>
+  </div>
+  <div class="carousel-control-custom">
+    <button style="top: 16px; right: 16px; height: 24px; width: 24px;z-index: 2; position: absolute; background: transparent; border: none; color: var(--bs-white);" id="toggle-fullscreen" class="bi bi-fullscreen" onclick="toggleFullScreen();"></button>
+    <button class="carousel-control-prev image-carousel-control-buttons-custom" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev" id="prev-slide">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next image-carousel-control-buttons-custom" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next" id="next-slide">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+</div>
+
+<script>
+const currsite = 'tb';
+const xhr = new XMLHttpRequest();
+const url = `https://api.github.com/repos/wackyblackie/tb/contents/pictures`;
+xhr.open('GET', url, true);
+xhr.onload = function() {
+  const data = JSON.parse(this.response);
+  for (let i in data) {
+    var fancyname = data[i].name
+    fancyname = fancyname.replace(/_/g, " ");
+    fancyname = fancyname.replace(/-/g, " ");
+    fancyname = fancyname.replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
+    fancyname = fancyname.replace(/ By /, " by ");
+    fancyname = fancyname.replace(/ Du /, " du ");
+    fancyname = fancyname.replace(/ Of /, " of ");
+    fancyname = fancyname.replace(/ The /, " the ");
+    fancyname = fancyname.replace(/ On /, " on ");
+    fancyname = fancyname.replace(/ In /, " in ");
+    fancyname = fancyname.replace(/ De /, " de ");
+    fancyname = fancyname.replace(/ Greyscale /, "");
+    fancyname = fancyname.replace(/ Grey/i, "");
+    fancyname = fancyname.replace(/4096x2304/, "");
+    fancyname = fancyname.replace(/ Uhd/, " in Ultra-HD");
+    fancyname = fancyname.replace(/ Wallpaper /, "");
+    fancyname = fancyname.replace(/ WP /, "");
+    fancyname = fancyname.replace(/nyc/i, "NYC")
+    fancyname = fancyname.substr(0, fancyname.length-4);
+    if (fancyname.indexOf('by') == -1 && fancyname.indexOf(" ") > 0) {
+      var resname = fancyname.substr(fancyname.indexOf(" ") +1);
+      resname = resname.substr(resname.indexOf(" ") +1);
+      var resauth = fancyname.substring(0, fancyname.lastIndexOf(" "));
+      resauth = resauth.substring(0, resauth.lastIndexOf(" "));
+      if (resauth.indexOf("NYC") > -1 && resauth.lastIndexOf("NYC") > 1) {
+        resauth = resauth.substring(0, resauth.length - 4);
+      }
+      fancyname = resname + " by " + resauth;
+    }
+    if (fancyname.indexOf("Ultra-HD by") > -1) {
+      fancyname = "Heron";
+    } else if (fancyname.indexOf("DefaultWallpaper by") > -1) {
+      fancyname = "Groovy Default Greyscale";
+    } else if (fancyname.indexOf("Ubuntu by Warty") > -1) {
+      fancyname = "Groovy Default";
+    } else if (fancyname.indexOf("Crocusby Roy Tanck") > -1) {
+      fancyname = "Crocus by Roy Tanck";
+    } else if (fancyname.indexOf("Fossa by") > -1) {
+      fancyname = "Fossa";
+    }
+    document.querySelector('div.carousel-inner').innerHTML +=
+      `<div class="carousel-item" data-id="${fancyname} | tb"><img class="d-block w-100" alt="${fancyname}" src="https://raw.githubusercontent.com/wackyblackie/tb/main/${data[i].path}" loading="lazy" style="height: 100%; width: 100%;"></img><div class="carousel-caption d-none d-md-block"><p style="color: rgba(var(--bs-light-rgb), 0.825); width: max-content;postition:relative; margin-right:auto; margin-left:auto;background-color:rgba(0,0,0,0.4167);border-radius: 3px;border: 0px solid black;">&nbsp;${fancyname}&nbsp;</p></div></div>`;
+  }
+}
+xhr.send();
+
+var myCarousel = document.getElementById('carousel')
+
+myCarousel.addEventListener('slid.bs.carousel', function (e) {
+  const ele = $('#carousel .active');
+  document.title = ele.data('id');
+});
+
+document.addEventListener("keypress", function(e) {
+  if (e.keyCode === 13) {
+    toggleFullScreen();
+  }
+}, false);
+
+document.getElementById("toggle-fullscreen").addEventListener("click",toggleFullScreen());
+
+window.addEventListener("keydown", (e) => {
+    if (e.code == "ArrowLeft" || e.code =="KeyA") {
+      document.querySelector("#prev-slide").click();
+    } else if (e.code == "ArrowRight" || e.code == "KeyD") {
+      document.querySelector("#next-slide").click();
+    }
+});
+window.addEventListener("mousemove", () => {setTimeout(() => {
+    document.body.style.cursor = 'none';
+    document.getElementsByClassName("carousel-control-custom")[0].style.visibility = 'hidden';
+    window.addEventListener("mousemove", ()=> {
+      document.body.style.cursor = 'initial';
+      document.getElementsByClassName("carousel-control-custom")[0].style.visibility = 'initial';
+    });
+  }, 3000);}, true);
+setTimeout(() => {
+  document.body.style.cursor = 'none';
+  document.getElementsByClassName("carousel-control-custom")[0].style.visibility = 'hidden';
+}, 3000);
+</script>
+<style>
+  p::after, p::before {
+    content: " ";
+  } body {
+    background-color: rgb(var(--bs-body-rgb));
+  }
+</style>
