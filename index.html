@@ -27,11 +27,11 @@ function toggleFullScreen() {
   </div>
   <div class="carousel-control-custom">
     <button style="top: 16px; right: 16px; height: 24px; width: 24px;z-index: 2; position: absolute; background: transparent; border: none; color: var(--bs-white);" id="toggle-fullscreen" class="bi bi-fullscreen" onclick="toggleFullScreen();"></button>
-    <button class="carousel-control-prev image-carousel-control-buttons-custom" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev" id="prev-slide">
+    <button class="carousel-control-prev image-carousel-control-buttons-custom" type="button" data-bs-target="#carousel" data-bs-slide="prev" id="prev-slide">
       <span class="carousel-control-prev-icon" aria-hidden="true"></span>
       <span class="visually-hidden">Previous</span>
     </button>
-    <button class="carousel-control-next image-carousel-control-buttons-custom" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next" id="next-slide">
+    <button class="carousel-control-next image-carousel-control-buttons-custom" type="button" data-bs-target="#carousel" data-bs-slide="next" id="next-slide">
       <span class="carousel-control-next-icon" aria-hidden="true"></span>
       <span class="visually-hidden">Next</span>
     </button>
@@ -85,9 +85,16 @@ xhr.onload = function() {
       fancyname = "Crocus by Roy Tanck";
     } else if (fancyname.indexOf("Fossa by") > -1) {
       fancyname = "Fossa";
+    } else if (fancyname.indexOf("Hippo by") > -1) {
+      fancyname = "Hippo";
     }
     document.querySelector('div.carousel-inner').innerHTML +=
-      `<div class="carousel-item" data-id="${fancyname} | tb"><img class="d-block w-100" alt="${fancyname}" src="https://raw.githubusercontent.com/wackyblackie/tb/main/${data[i].path}" loading="lazy" style="height: 100%; width: 100%;"></img><div class="carousel-caption d-none d-md-block"><p style="color: rgba(var(--bs-light-rgb), 0.825); width: max-content;postition:relative; margin-right:auto; margin-left:auto;background-color:rgba(0,0,0,0.4167);border-radius: 3px;border: 0px solid black;">&nbsp;${fancyname}&nbsp;</p></div></div>`;
+      `<div class="carousel-item" data-id="${fancyname} | tb">
+        <img class="d-block w-100" alt="${fancyname}" loading="lazy" src="https://cdn.jsdelivr.net/gh/wackyblackie/tb/${data[i].path}" style="width: auto !important; height: 100%;object-fit:contain; margin-left:auto;margin-right:auto;"></img>
+        <div class="carousel-caption d-none d-md-block">
+          <p style="color: rgba(var(--bs-light-rgb), 0.825); width: max-content;postition:relative; margin-right:auto; margin-left:auto;background-color:rgba(0,0,0,0.4167);border-radius: 3px;border: 0px solid black;">&nbsp;${fancyname}&nbsp;</p>
+        </div>
+      </div>`;
   }
 }
 xhr.send();
@@ -98,21 +105,17 @@ myCarousel.addEventListener('slid.bs.carousel', function (e) {
   const ele = $('#carousel .active');
   document.title = ele.data('id');
 });
-
-document.addEventListener("keypress", function(e) {
-  if (e.keyCode === 13) {
-    toggleFullScreen();
-  }
-}, false);
-
 document.getElementById("toggle-fullscreen").addEventListener("click",toggleFullScreen());
 
 window.addEventListener("keydown", (e) => {
-    if (e.code == "ArrowLeft" || e.code =="KeyA") {
-      document.querySelector("#prev-slide").click();
-    } else if (e.code == "ArrowRight" || e.code == "KeyD") {
-      document.querySelector("#next-slide").click();
-    }
+  console.log(e);
+  if (e.key == "ArrowLeft" || e.key =="a") {
+    document.querySelector("#prev-slide").click();
+  } else if (e.key == "ArrowRight" || e.key == "d") {
+    document.querySelector("#next-slide").click();
+  } else if (e.key == "Enter") {
+    toggleFullScreen();
+  }
 });
 window.addEventListener("mousemove", () => {setTimeout(() => {
     document.body.style.cursor = 'none';
